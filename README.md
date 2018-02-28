@@ -1,7 +1,7 @@
 express-batch-json
 =============
 
-The project forked from [express-batch](yarikos/express-batch).
+The project forked from [express-batch](https://github.com/yarikos/express-batch).
 
 ## Description
 
