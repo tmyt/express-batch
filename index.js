@@ -51,9 +51,10 @@ function processRequests(app, req, res, body, options){
       fakeReq.put(Buffer.from(request.body));
       fakeReq.stop();
     }else{
-      delete fakeReq.headers['Content-Length'];
-      delete fakeReq.headers['Content-Type'];
+      delete fakeReq.headers['content-length'];
+      delete fakeReq.headers['content-type'];
     }
+    delete fakeReq.headers['accept-encoding'];
 
     fakeRes.once('end', done);
 
@@ -68,7 +69,6 @@ function processRequests(app, req, res, body, options){
 }
 
 module.exports = function expressBatch(app, options) {
-
   options = options || {};
 
   return function (req, res) {
