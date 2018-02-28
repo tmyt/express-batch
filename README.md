@@ -1,13 +1,7 @@
-express-batch
+express-batch-json
 =============
 
-[![Build Status][travis-img]][travis-url]
-[![Test Coverage][coveralls-img]][coveralls-url]
-[![Code Climate][codeclimate-img]][codeclimate-url]
-[![NPM Downloads][downloads-img]][downloads-url]
-[![License][license-img]][license-url]
-[![Known Vulnerabilities][snyk-img]][snyk-url]
-
+The project forked from [express-batch](yarikos/express-batch).
 
 ## Description
 
@@ -18,8 +12,6 @@ It's attached as a handler for a particular route.
 If you need to perform several different requests to one API simultaneously, you could combine them all together (in one querystring) and send only one request to the handler's route.
 
 The handler parses requests, and then invokes the relevant handler for each request (the standard app router is used), collects all the responses and sends them back as a JSON object with sections for each response.
-
-Currently, only routes for GET locations are supported.
 
 ## Example
 
@@ -50,25 +42,44 @@ app.listen(3000);
 ```
 [This example in code.](example)
 
-With this example, a request to  `http://localhost:3000/api/batch?users=/api/users/49&pi=api/constants/pi&nonexistent=/not/existent/route` will return:
+With this example, a request to  `http://localhost:3000/api/batch with this JSON 
 
 ```js
 {
-    users: {
+    requests: [{
+        'method': 'GET',
+        'uri': '/api/users/49'
+    },
+    {
+        'method': 'GET',
+        'uri': 'api/constants/pi'
+    },
+    {
+        'method': 'GET',
+        'uri': '/not/existent/route'
+    }]
+}
+```
+
+will return:
+
+```js
+{
+    responses: [ {
         result: {
             id: "49",
             name: "Alice"
         },
         status: 200
     },
-    pi: {
+    {
         result: 3.141592653589793,
         status: 200
     },
-    nonexistent: {
+    {
         result: "Not Found",
         status: 404
-    }
+    } ]
 }
 ```
 
@@ -132,23 +143,3 @@ There are similar packages, but which work using real http requests:
   [MIT](LICENSE)
 
 ============= 
-[![Gitter][gitter-img]][gitter-url]
-[![Bitdeli Badge][bitdeli-img]][bitdeli-url]
-
-
-[travis-img]: https://travis-ci.org/yarikos/express-batch.svg?branch=master
-[travis-url]: https://travis-ci.org/yarikos/express-batch
-[downloads-img]: https://img.shields.io/npm/dm/express-batch.svg
-[downloads-url]: https://npmjs.org/package/express-batch
-[license-img]: https://img.shields.io/npm/l/express-batch.svg
-[license-url]: LICENSE
-[coveralls-img]: https://img.shields.io/coveralls/yarikos/express-batch.svg
-[coveralls-url]: https://coveralls.io/r/yarikos/express-batch
-[codeclimate-img]: https://img.shields.io/codeclimate/github/yarikos/express-batch.svg
-[codeclimate-url]: https://codeclimate.com/github/yarikos/express-batch
-[gitter-img]: https://badges.gitter.im/Join%20Chat.svg
-[gitter-url]: https://gitter.im/yarikos/express-batch?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
-[bitdeli-img]: https://d2weczhvl823v0.cloudfront.net/yarikos/express-batch/trend.png
-[bitdeli-url]: https://bitdeli.com/free%20%22Bitdeli%20Badge%22
-[snyk-img]: https://snyk.io/test/github/yarikos/express-batch/badge.svg
-[snyk-url]: https://snyk.io/test/github/yarikos/express-batch

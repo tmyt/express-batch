@@ -24,7 +24,10 @@
   "bugs": {
     "url": "https://github.com/yarikos/express-batch/issues"
   },
-  "dependencies": {},
+  "dependencies": {
+    "minimatch": "^3.0.2",
+    "stream-buffers": "^3.0.1"
+  },
   "devDependencies": {
     "express": "4.*",
     "mocha": "2.x",

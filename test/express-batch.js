@@ -23,12 +23,34 @@ describe("request to route for express-batch", function () {
         app.use("/api/batch", expressBatch(app));
     });
 
+    describe("post empty object", function () {
+        it("should return 400 response", function (done) {
+            request(app)
+                .post("/api/batch")
+                .expect({ })
+                .expect(400, done);
+        });
+    });
+
+    describe("content-type is not application/json", function () {
+        it("should return 400 response", function (done) {
+            request(app)
+                .post("/api/batch")
+                .set('Content-Type', 'application/x-www-form-urlencoded')
+                .send({requests:[]})
+                .expect({ })
+                .expect(400, done);
+        });
+    });
+
+
     describe("without any api endpoint specified", function () {
         it("should return empty object", function (done) {
             request(app)
-                .get("/api/batch")
-                .expect({
-                })
+                .post("/api/batch")
+                .set('Content-Type', 'application/json')
+                .send({requests:[]})
+                .expect({ })
                 .expect(200, done);
         });
     });
@@ -36,13 +58,13 @@ describe("request to route for express-batch", function () {
     describe("with invalid endpoint specified", function () {
         it("should indicate 'not found' status in result", function (done) {
             request(app)
-                .get("/api/batch?endpoint=/wrong/path")
-                .expect({
-                    endpoint: {
-                        status: 404,
-                        result: "Not Found"
-                    }
-                })
+                .post("/api/batch")
+                .set('Content-Type', 'application/json')
+                .send({requests:[{'method': 'GET', 'uri': '/wrong/path'}]})
+                .expect({ responses: [ {
+                    status: 404,
+                    result: "Not Found"
+                 } ] })
                 .expect(200, done);
         });
     });
@@ -55,12 +77,14 @@ describe("request to route for express-batch", function () {
             });
 
             request(app)
-                .get("/api/batch?endpoint=/api/exception/sync")
+                .post("/api/batch")
+                .set('Content-Type', 'application/json')
+                .send({requests:[{'method': 'GET', 'uri': '/api/exception/sync'}]})
                 .expect({
-                    endpoint: {
+                    responses: [{
                         status: 500,
                         result: "Internal Server Error"
-                    }
+                    }]
                 })
                 .expect(200, done);
         });
@@ -77,11 +101,13 @@ describe("request to route for express-batch", function () {
             });
 
             request(app)
-                .get("/api/batch?endpoint=/api/exception/async")
+                .post("/api/batch")
+                .set('Content-Type', 'application/json')
+                .send({requests:[{'method': 'GET', 'uri': '/api/exception/async'}]})
                 .expect({
-                    endpoint: {
+                    responses:[ {
                         status: 500
-                    }
+                    }]
                 })
                 .expect(200, done);
         });
@@ -96,14 +122,16 @@ describe("request to route for express-batch", function () {
             });
 
             request(app)
-                .get("/api/batch?user=/api/user")
+                .post("/api/batch")
+                .set('Content-Type', 'application/json')
+                .send({requests:[{'method': 'GET', 'uri': '/api/user'}]})
                 .expect({
-                    user: {
+                    responses: [{
                         status: 200,
                         result: {
                             id: 17
                         }
-                    }
+                    }]
                 })
                 .expect(200, done);
         });
@@ -118,14 +146,16 @@ describe("request to route for express-batch", function () {
             });
 
             request(app)
-                .get("/api/batch?user=/api/user")
+                .post("/api/batch")
+                .set('Content-Type', 'application/json')
+                .send({requests:[{'method': 'GET', 'uri': '/api/user'}]})
                 .expect({
-                    user: {
+                    responses: [{
                         status: 200,
                         result: {
                             id: 2
                         }
-                    }
+                    }]
                 })
                 .expect(200, done);
         });
@@ -138,12 +168,14 @@ describe("request to route for express-batch", function () {
             });
 
             request(app)
-                .get("/api/batch?timestamp=/api/timestamp")
+                .post("/api/batch")
+                .set('Content-Type', 'application/json')
+                .send({requests:[{'method': 'GET', 'uri': '/api/timestamp'}]})
                 .expect({
-                    timestamp: {
+                    responses: [{
                         status: 200,
                         result: 556984800
-                    }
+                    }]
                 })
                 .expect(200, done);
         });
@@ -156,12 +188,14 @@ describe("request to route for express-batch", function () {
             });
 
             request(app)
-                .get("/api/batch?timestamp=/api/timestamp")
+                .post("/api/batch")
+                .set('Content-Type', 'application/json')
+                .send({requests:[{'method': 'GET', 'uri': '/api/timestamp'}]})
                 .expect({
-                    timestamp: {
+                    responses: [{
                         status: 200,
                         result: 556984800
-                    }
+                    }]
                 })
                 .expect(200, done);
         });
@@ -174,12 +208,14 @@ describe("request to route for express-batch", function () {
             });
 
             request(app)
-                .get("/api/batch?file=/api/file")
+                .post("/api/batch")
+                .set('Content-Type', 'application/json')
+                .send({requests:[{'method': 'GET', 'uri': '/api/file'}]})
                 .expect({
-                    file: {
+                    responses: [{
                         status: 501,
                         result: "Not Implemented"
-                    }
+                    }]
                 })
                 .expect(200, done);
         });
@@ -192,11 +228,13 @@ describe("request to route for express-batch", function () {
             });
 
             request(app)
-                .get("/api/batch?timestamp=/api/timestamp")
+                .post("/api/batch")
+                .set('Content-Type', 'application/json')
+                .send({requests:[{'method': 'GET', 'uri': '/api/timestamp'}]})
                 .expect({
-                    timestamp: {
+                    responses: [{
                         status: 403
-                    }
+                    }]
                 })
                 .expect(200, done);
         });
@@ -209,12 +247,14 @@ describe("request to route for express-batch", function () {
             });
 
             request(app)
-                .get("/api/batch?timestamp=/api/timestamp")
+                .post("/api/batch")
+                .set('Content-Type', 'application/json')
+                .send({requests:[{'method': 'GET', 'uri': '/api/timestamp'}]})
                 .expect({
-                    timestamp: {
+                    responses:[ {
                         status: 403,
                         result: "Forbidden"
-                    }
+                    }]
                 })
                 .expect(200, done);
         });
@@ -230,16 +270,18 @@ describe("request to route for express-batch", function () {
             });
 
             request(app)
-                .get("/api/batch?timestamp=/api/user/457")
+                .post("/api/batch")
                 .set('token', 'secretToken')
+                .set('Content-Type', 'application/json')
+                .send({requests:[{'method': 'GET', 'uri': '/api/user/457'}]})
                 .expect({
-                    timestamp: {
+                    responses:[ {
                         status: 200,
                         result: {
                             id: 457,
                             token: 'secretToken'
                         }
-                    }
+                    }]
                 })
                 .expect(200, done);
         });
@@ -254,14 +296,16 @@ describe("request to route for express-batch", function () {
             });
 
             request(app)
-                .get("/api/batch?user=api/user")
+                .post("/api/batch")
+                .set('Content-Type', 'application/json')
+                .send({requests:[{'method': 'GET', 'uri': 'api/user'}]})
                 .expect({
-                    user: {
+                    responses: [{
                         status: 200,
                         result: {
                             id: 41
                         }
-                    }
+                    }]
                 })
                 .expect(200, done);
         });
@@ -287,16 +331,18 @@ describe("request to route for express-batch", function () {
                 });
 
             request(app)
-                .get("/api/batch?president=api/president/44&weather=/api/weather/kyiv/1416337310")
+                .post("/api/batch")
+                .set('Content-Type', 'application/json')
+                .send({requests:[{'method': 'GET', 'uri': 'api/president/44'}, {'method': 'GET', 'uri': '/api/weather/kyiv/1416337310'}]})
                 .expect({
-                    president: {
+                    responses: [{
                         status: 200,
                         result: {
                             id: 44,
                             name: 'Barack'
                         }
                     },
-                    weather: {
+                    {
                         status: 200,
                         result: {
                             city: 'Kyiv',
@@ -304,7 +350,7 @@ describe("request to route for express-batch", function () {
                             temperature: -2,
                             unit: '°C'
                         }
-                    }
+                    }]
                 })
                 .expect(200, done);
         });
@@ -321,20 +367,22 @@ describe("request to route for express-batch", function () {
                 });
 
             request(app)
-                .get("/api/batch?e=/api/constants/e&pi=/api/constants/pi&mendelson=/api/constants/mendelson")
+                .post("/api/batch")
+                .set('Content-Type', 'application/json')
+                .send({requests:[{'method': 'GET', 'uri': '/api/constants/e'}, {'method': 'GET', 'uri': '/api/constants/pi'}, {'method': 'GET', 'uri': '/api/constants/mendelson'}]})
                 .expect({
-                    e: {
+                    responses: [{
                         status: 200,
                         result: Math.E
                     },
-                    pi: {
+                    {
                         status: 200,
                         result: Math.PI
                     },
-                    mendelson: {
+                    {
                         status: 404,
                         result: "Not Found"
-                    }
+                    }]
                 })
                 .expect(200, done);
         });
@@ -376,22 +424,24 @@ describe("request to route for express-batch", function () {
                 });
 
             request(app)
-                .get("/api/batchNested?climate=/api/climate/?sunny=true&warm=true;topography=/api/topography/?hilly=false&rocky=false")
+                .post("/api/batch")
+                .set('Content-Type', 'application/json')
+                .send({requests:[{'method': 'GET', 'uri': '/api/climate/?sunny=true&warm=true'}, {'method': 'GET', 'uri': '/api/topography/?hilly=false&rocky=false'}]})
                 .expect({
-                    climate: {
+                    responses: [{
                         status: 200,
                         result: {
                             sunny: true,
                             warm: true
                         }
                     },
-                    topography: {
+                    {
                         status: 200,
                         result: {
                             hilly: false,
                             rocky: false
                         }
-                    }
+                    }]
                 })
                 .expect(200, done);
         });
@@ -414,15 +464,17 @@ describe("request to route for express-batch", function () {
                 });
 
             request(app)
-                .get("/api/batchWithHeaders?pi=/api/constants/pi")
+                .post("/api/batchWithHeaders")
+                .set('Content-Type', 'application/json')
+                .send({requests:[{'method': 'GET', 'uri': '/api/constants/pi'}]})
                 .expect({
-                    pi: {
+                    responses: [{
                         status: 200,
                         result: Math.PI,
                         headers: {
                             "X-Powered-By": "Express"
                         }
-                    }
+                    }]
                 })
                 .expect(200, done);
         });
@@ -437,9 +489,11 @@ describe("request to route for express-batch", function () {
                 });
 
             request(app)
-                .get("/api/batchWithHeaders?e=/api/constants/e&pi=/api/constants/pi&mendelson=/api/constants/mendelson")
+                .post('/api/batchWithHeaders')
+                .set('Content-Type', 'application/json')
+                .send({requests: [{'method': 'GET', 'uri': '/api/constants/e'}, {'method': 'GET', 'uri': '/api/constants/pi'}, {'method': 'GET', 'uri': '/api/constants/mendelson'}]})
                 .expect({
-                    e: {
+                    responses: [{
                         status: 200,
                         result: Math.E,
                         // @FIXME strict checking of content of "headers" (equality to exact object) seems redundant
@@ -448,7 +502,7 @@ describe("request to route for express-batch", function () {
                             "X-Powered-By": "Express"
                         }
                     },
-                    pi: {
+                    {
                         status: 200,
                         result: Math.PI,
                         headers: {
@@ -456,14 +510,14 @@ describe("request to route for express-batch", function () {
                             token: 124
                         }
                     },
-                    mendelson: {
+                    {
                         status: 404,
                         result: "Not Found",
                         headers: {
                             "X-Powered-By": "Express",
                             "Content-Type": "text/plain; charset=utf-8"
                         }
-                    }
+                    }]
                 })
                 .expect(200, done);
         });
